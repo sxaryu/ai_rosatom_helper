@@ -6,8 +6,11 @@ import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 import requests
+import os
 
-# Настройка логирования
+OLLAMA_BASE_URL = os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'phi3:mini')
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -196,8 +199,8 @@ tickets_history = []
 
 class LLMClient:
     def __init__(self):
-        self.base_url = "http://localhost:11434"
-        self.model = "phi3:mini"
+        self.base_url = OLLAMA_BASE_URL 
+        self.model = OLLAMA_MODEL
     
     def is_available(self):
         try:
