@@ -11,20 +11,14 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование всего бэкенда
-COPY main.py .
-COPY agents/ ./agents/
-COPY db/ ./db/
-COPY models/ ./models/
-COPY utils/ ./utils/
+# Копирование исходного кода из папки backend
+COPY backend/main.py .
+COPY backend/agents/ ./agents/
+COPY backend/db/ ./db/
+COPY backend/utils/ ./utils/
 
 # Создание папки для логов
 RUN mkdir -p logs
 
-# Создание непривилегированного пользователя
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
-
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запуск приложения
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
