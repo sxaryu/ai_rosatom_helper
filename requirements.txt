@@ -1,6 +1,6 @@
 # FastAPI и веб-сервер
 fastapi==0.104.1
-uvicorn==0.24.0
+uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
 # Машинное обучение и NLP
@@ -9,6 +9,7 @@ torch==2.1.0
 sentence-transformers==2.2.2
 scikit-learn==1.3.0
 accelerate==0.24.1
+peft==0.6.0
 
 # Векторная база данных и embeddings
 chromadb==0.4.15
@@ -31,16 +32,22 @@ python-dateutil==2.8.2
 pyyaml==6.0.1
 Jinja2==3.1.2
 
-# Docker (для контейнеризации)
-docker==6.1.3
+# База данных
+sqlalchemy==2.0.23
 
 # Безопасность
 bcrypt==4.0.1
-python-jose==3.3.0
-passlib==1.7.4
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
 
-sqlalchemy>=2.0.0
-torch>=2.0.0
-transformers>=4.30.0
-peft>=0.3.0
-accelerate>=0.20.0
+# Дополнительные зависимости для ChromaDB
+pypika==0.48.9
+overrides==7.4.0
+typing-extensions==4.8.0
+
+# Оптимизация производительности
+onnxruntime==1.16.0
+psutil==5.9.6
+
+# Для работы с Docker (опционально)
+docker==6.1.3

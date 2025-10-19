@@ -16,9 +16,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
 
-  # FastAPI бэкенд
-  # УДАЛИ ЭТУ СТРОКУ → services:
+  # Backend FastAPI с ML возможностями
   backend:
     build:
       context: .
@@ -29,16 +29,29 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_MODEL=phi3:mini
       - PYTHONPATH=/app
+      - LOG_LEVEL=INFO
+      - TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface
+      - HF_HOME=/home/appuser/.cache/huggingface
     depends_on:
-        - ollama
+      ollama:
+        condition: service_healthy
     restart: unless-stopped
     volumes:
       - ./logs:/app/logs
+      - ./app:/app
+      - model_cache:/home/appuser/.cache/huggingface
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
 
   # Nginx для фронтенда
   frontend:
@@ -50,6 +63,9 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    volumes:
+      - ./frontend:/usr/share/nginx/html
 
 volumes:
   ollama_data:
+  model_cache:

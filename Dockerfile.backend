@@ -2,23 +2,29 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
+# Установка системных зависимостей для ML библиотек
 RUN apt-get update && apt-get install -y \
     curl \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Копирование requirements и установка зависимостей
+# Копирование requirements и установка Python зависимостей
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование исходного кода из папки backend
-COPY backend/main.py .
-COPY backend/agents/ ./agents/
-COPY backend/db/ ./db/
-COPY backend/utils/ ./utils/
+# Установка torch CPU-only версии для уменьшения размера (раскомментировать если не нужен CUDA)
+# RUN pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
 
-# Создание папки для логов
-RUN mkdir -p logs
+# Копирование исходного кода
+COPY app/ .
 
-# Запуск приложения
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Создание пользователя для безопасности
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+# Создание директории для кэша моделей
+RUN mkdir -p /home/appuser/.cache/huggingface
+
+# Запуск приложения с оптимизациями
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
